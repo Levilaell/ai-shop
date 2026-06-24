@@ -1,0 +1,19 @@
+node_modules/
+dist/
+.next/
+out/
+build/
+coverage/
+*.tsbuildinfo
+
+# env
+.env
+.env.local
+.env*.local
+
+# os / editor
+.DS_Store
+*.log
+
+# claude code local (machine-specific)
+.claude/settings.local.json
