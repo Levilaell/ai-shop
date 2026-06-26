@@ -463,6 +463,28 @@ export type Database = {
     }
     Functions: {
       is_account_member: { Args: { p_account_id: string }; Returns: boolean }
+      queue_archive: {
+        Args: { p_msg_id: number; p_queue: string }
+        Returns: boolean
+      }
+      queue_delete: {
+        Args: { p_msg_id: number; p_queue: string }
+        Returns: boolean
+      }
+      queue_read: {
+        Args: { p_qty: number; p_queue: string; p_vt: number }
+        Returns: unknown[]
+        SetofOptions: {
+          from: "*"
+          to: "message_record"
+          isOneToOne: false
+          isSetofReturn: true
+        }
+      }
+      queue_send: {
+        Args: { p_delay?: number; p_msg: Json; p_queue: string }
+        Returns: number
+      }
     }
     Enums: {
       affiliate_platform: "tiktok_shop" | "amazon" | "shopee"

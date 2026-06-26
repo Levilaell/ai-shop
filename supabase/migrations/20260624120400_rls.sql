@@ -42,6 +42,13 @@ grant usage on schema public to authenticated;
 grant select, insert, update, delete on all tables in schema public to authenticated;
 grant usage, select on all sequences in schema public to authenticated;
 
+-- The worker uses the service_role key, which BYPASSES RLS — but bypassing RLS
+-- does NOT grant table privileges, so service_role still needs explicit grants
+-- (spec §2: the worker reads/writes every domain table directly).
+grant usage on schema public to service_role;
+grant select, insert, update, delete on all tables in schema public to service_role;
+grant usage, select on all sequences in schema public to service_role;
+
 -- accounts: members can read/update their own account. Creation is done by the
 -- seed / service_role (no public signup flow in v1, see spec §13).
 create policy accounts_select on public.accounts

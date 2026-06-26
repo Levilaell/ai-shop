@@ -29,13 +29,29 @@ com **custo rastreado por unidade** e conversão medida antes de escalar.
 | Tarefa | Estado |
 |---|---|
 | **T1 — Fundação** | ✅ **Concluída e validada** no Postgres 17 real |
-| T2 — Score `scoreProduct` (puro + testes) + ingestão de produtos | ⬜ **próxima** |
-| T3 — Fila pgmq + worker (semáforo de concorrência, handlers, logging) | ⬜ |
-| T4 — Roteiro (Claude, N ângulos) | ⬜ |
-| T5 — Vídeo (`VideoProvider` + HeyGen, async, custo, retry) | ⬜ |
-| T6 — Compliance + tela de publicação manual | ⬜ |
-| T7 — Frontend (board kanban realtime, filas, economia unitária) | ⬜ |
-| T8 — Tracking/feedback | ⬜ |
+| T2 — Score `scoreProduct` (puro + testes) + ingestão de produtos | ✅ código + 34 testes |
+| T3 — Fila pgmq + worker (semáforo de concorrência, handlers, logging) | ✅ código + 5 testes (migration não aplicada) |
+| T4 — Roteiro (Claude, N ângulos) | ✅ `ScriptProvider` + adapter Claude (tool-use) |
+| T5 — Vídeo (`VideoProvider` + HeyGen, async, custo, retry) | ✅ adapter HeyGen + handlers |
+| T6 — Compliance + tela de publicação manual | ✅ gate puro + trigger DB + tela publish |
+| T7 — Frontend (board kanban realtime, filas, economia unitária) | ✅ Next.js, 11 rotas, build ok |
+| T8 — Tracking/feedback | ✅ entrada de performance + `blendScore` |
+
+> **Validado nesta sessão:** `pnpm typecheck` limpo (4 pacotes), **70 testes**,
+> `web build` (11 rotas). **Smoke test ponta-a-ponta no Postgres 17 real:**
+> as 8 migrations aplicam (`db:reset`), `gen:types` bate com o código, o trigger
+> de enqueue gera o job, o worker consome via wrappers `queue_*`, o **Claude real
+> (Opus 4.8) gerou 3 ângulos** e o produto chegou a `script_ready`; o **hard block
+> de compliance** rejeitou `ready_to_publish` sem checklist e liberou com; o
+> **loop de feedback** subiu o score 40→70 e moveu `published→tracking`.
+>
+> **2 bugs achados rodando de verdade (corrigidos):** (1) `service_role` sem
+> GRANT nas tabelas — adicionado em `*_rls.sql`; (2) worker não achava o `.env`
+> da raiz (cwd = apps/worker) — `config.ts` agora busca subindo os diretórios.
+>
+> **Não testado (custa USD):** submissão real de vídeo no HeyGen. A key foi
+> validada (1282 avatares/2350 vozes) e o `.env` está configurado com avatar +
+> voz pt-BR (Sofia Brazil) — basta rodar o worker com um roteiro aprovado.
 
 **Disciplina de build (importante):** uma tarefa por vez. Entregar → o operador
 revisa → só então avança. **Não construir o que ainda não foi pedido.**

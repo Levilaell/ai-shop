@@ -27,6 +27,13 @@ export const PIPELINE_STATUSES = [
 
 export type PipelineStatus = (typeof PIPELINE_STATUSES)[number];
 
+/**
+ * Affiliate source platforms (mirrors the DB `affiliate_platform` enum). TikTok
+ * Shop today; Amazon/Shopee are typed for the future adapter (spec §11).
+ */
+export const AFFILIATE_PLATFORMS = ['tiktok_shop', 'amazon', 'shopee'] as const;
+export type AffiliatePlatform = (typeof AFFILIATE_PLATFORMS)[number];
+
 /** Who is allowed to trigger a transition. */
 export type TransitionActor = 'system' | 'user';
 
@@ -108,4 +115,21 @@ export function isManualTransition(from: PipelineStatus, to: PipelineStatus): bo
 /** Has the pipeline reached a terminal state? */
 export function isTerminal(status: PipelineStatus): boolean {
   return (TERMINAL_STATUSES as readonly PipelineStatus[]).includes(status);
+}
+
+/**
+ * Linear rank of a status along the happy-path pipeline (its index in
+ * PIPELINE_STATUSES, which is authored in pipeline order). Used by workers for
+ * idempotency guards ("has this entity already advanced past stage X?"). The
+ * terminal off-ramps (`archived`, `rejected`) rank last; comparisons between a
+ * terminal and a mid-pipeline status aren't meaningful — guard with isTerminal.
+ */
+export function pipelineRank(status: PipelineStatus): number {
+  return PIPELINE_STATUSES.indexOf(status);
+}
+
+/** True if `status` is at or beyond `target` on the happy path (terminals excluded). */
+export function isAtOrBeyond(status: PipelineStatus, target: PipelineStatus): boolean {
+  if (isTerminal(status)) return false;
+  return pipelineRank(status) >= pipelineRank(target);
 }

@@ -89,10 +89,15 @@ pnpm db:push       # aplica as migrations no projeto remoto
 Construído tarefa por tarefa (revisão entre cada uma):
 
 - [x] **T1** — Fundação: monorepo, schema + RLS + migrations, `pipeline_events`, seed.
-- [ ] T2 — Score de produto (`scoreProduct` puro + testes) + ingestão.
-- [ ] T3 — Fila pgmq + worker (semáforo de concorrência, handlers, logging).
-- [ ] T4 — Roteiro (Claude, N ângulos).
-- [ ] T5 — Vídeo (`VideoProvider` + HeyGen, async, custo, retry).
-- [ ] T6 — Compliance + tela de publicação manual.
-- [ ] T7 — Frontend (board kanban realtime, filas, economia unitária).
-- [ ] T8 — Tracking/feedback.
+- [x] **T2** — Score de produto (`scoreProduct` puro + testes) + ingestão CSV.
+- [x] **T3** — Fila pgmq + worker (semáforo de concorrência, handlers, logging).
+- [x] **T4** — Roteiro (Claude via tool-use, N ângulos, `ScriptProvider`).
+- [x] **T5** — Vídeo (`VideoProvider` + HeyGen, async, custo, retry/backoff).
+- [x] **T6** — Compliance (portão hard-block: pura + trigger DB) + publicação manual.
+- [x] **T7** — Frontend Next.js (board kanban realtime, filas, economia unitária).
+- [x] **T8** — Tracking (entrada manual de performance) + feedback de score.
+
+> **Validação T2–T8:** `pnpm typecheck` limpo (4 pacotes), **70 testes** verdes
+> (`pnpm test`), e `pnpm --filter @ai-shop/web build` compila as 11 rotas. As
+> migrations novas (T3 fila, T6 compliance, T8 feedback) **ainda não foram
+> aplicadas num Postgres real** (sem Docker neste ambiente) — ver HANDOFF §2.
